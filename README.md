@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LMS Assignment Tracker - Web Application
 
-## Getting Started
+A beautiful Next.js web application to automatically fetch and display your LMS assignments.
 
-First, run the development server:
+## Features
 
+- 🎨 **Beautiful UI** - Modern, responsive design with Tailwind CSS
+- 🔐 **Secure Login** - Enter credentials directly in the browser
+- ⚡ **Real-time Scraping** - Fetches assignments dynamically
+- 📊 **Clean Display** - Organized view of due and upcoming assignments
+- 🚀 **Vercel Ready** - Deploy with one click
+
+## Local Development
+
+### Prerequisites
+
+- Node.js 18+ 
+- pnpm (recommended) or npm
+
+### Setup
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run development server:
+```bash
+pnpm dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Open [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy to Vercel
 
-## Learn More
+### Option 1: Deploy via Vercel CLI
 
-To learn more about Next.js, take a look at the following resources:
+1. Install Vercel CLI:
+```bash
+npm i -g vercel
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Deploy:
+```bash
+vercel
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Option 2: Deploy via GitHub
 
-## Deploy on Vercel
+1. Push your code to GitHub
+2. Import project in [Vercel Dashboard](https://vercel.com)
+3. Vercel will automatically detect Next.js and deploy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Option 3: Deploy Button
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/lms-assignment-tracker)
+
+## Environment Variables
+
+No environment variables needed! The app works out of the box.
+
+## Project Structure
+
+```
+web-app/
+├── app/
+│   ├── api/
+│   │   └── scrape/
+│   │       └── route.ts      # API endpoint for scraping
+│   ├── components/
+│   │   ├── CredentialsForm.tsx
+│   │   ├── LoadingSteps.tsx
+│   │   └── AssignmentsDisplay.tsx
+│   ├── page.tsx              # Main page
+│   └── layout.tsx
+├── vercel.json               # Vercel configuration
+└── package.json
+```
+
+## How It Works
+
+1. User enters credentials in the web interface
+2. Credentials are sent to `/api/scrape` endpoint
+3. Server uses Puppeteer to:
+   - Login to LMS
+   - Navigate to calendar
+   - Extract assignments
+   - Get course information
+4. Results are displayed in a beautiful UI
+
+## Notes
+
+- Credentials are never stored, only used for the current session
+- For Vercel deployment, course extraction is limited to first 5 assignments (due to timeout limits)
+- Local development has no limits
+
+## Troubleshooting
+
+### Puppeteer Issues
+
+If you encounter Puppeteer errors locally:
+```bash
+pnpm exec puppeteer browsers install chrome
+```
+
+### Vercel Deployment Issues
+
+- Make sure `@sparticuz/chromium` is in dependencies
+- Check function timeout settings in `vercel.json`
+- Review Vercel logs for specific errors
+
+## License
+
+MIT
