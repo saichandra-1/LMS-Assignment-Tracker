@@ -11,9 +11,9 @@ async function getBrowser() {
     const isVercel = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
     
     if (isVercel) {
-        // Use Chromium for Vercel
-        const chromium = await import('@sparticuz/chromium');
-        const Chromium = chromium.default;
+        // Use Chromium for Vercel - optimized for lower memory usage
+        const chromium = await import('@sparticuz/chromium-min');
+        const Chromium = chromium.default || chromium;
         
         // Get Chromium executable path and args
         const executablePath = await Chromium.executablePath();
@@ -31,9 +31,21 @@ async function getBrowser() {
                 '--no-first-run',
                 '--no-zygote',
                 '--single-process',
-                '--disable-gpu'
+                '--disable-gpu',
+                '--disable-software-rasterizer',
+                '--disable-extensions',
+                '--disable-background-networking',
+                '--disable-background-timer-throttling',
+                '--disable-renderer-backgrounding',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-breakpad',
+                '--disable-component-extensions-with-background-pages',
+                '--disable-default-apps',
+                '--disable-features=TranslateUI',
+                '--disable-ipc-flooding-protection',
+                '--disable-sync'
             ],
-            defaultViewport: Chromium.defaultViewport || { width: 1920, height: 1080 },
+            defaultViewport: { width: 1280, height: 720 },
             executablePath: executablePath,
             headless: true,
         });
@@ -165,8 +177,8 @@ export async function POST(request: NextRequest) {
                 return results;
             });
 
-            // Get course information (limit to first 5 for Vercel timeout)
-            const limit = process.env.VERCEL ? 5 : assignments.length;
+            // Get course information (limit to first 3 for Vercel memory/timeout)
+            const limit = process.env.VERCEL ? 3 : assignments.length;
             for (let i = 0; i < Math.min(limit, assignments.length); i++) {
                 const assignment = assignments[i];
                 try {
