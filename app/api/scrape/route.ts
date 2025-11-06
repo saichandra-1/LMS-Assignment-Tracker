@@ -12,7 +12,7 @@ async function getBrowser() {
     
     if (isVercel) {
         // Use Chromium for Vercel - optimized for lower memory usage
-        const chromium = await import('@sparticuz/chromium-min');
+        const chromium = await import('@sparticuz/chromium');
         const Chromium = chromium.default || chromium;
         
         // Get Chromium executable path and args
