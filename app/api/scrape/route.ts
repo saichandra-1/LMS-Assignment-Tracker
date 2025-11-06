@@ -8,23 +8,33 @@ function delay(ms: number) {
 
 // Get Chromium executable path (works for both local and Vercel)
 async function getBrowser() {
-    const isVercel = process.env.VERCEL === '1';
+    const isVercel = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
     
     if (isVercel) {
         // Use Chromium for Vercel
         const chromium = await import('@sparticuz/chromium');
-        const chromiumDefault = chromium.default || chromium;
+        const Chromium = chromium.default;
+        
+        // Get Chromium executable path and args
+        const executablePath = await Chromium.executablePath();
+        const args = Chromium.args || [];
         
         return puppeteer.launch({
             args: [
-                ...(chromiumDefault.args || []),
+                ...args,
                 '--hide-scrollbars',
                 '--disable-web-security',
                 '--no-sandbox',
-                '--disable-setuid-sandbox'
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process',
+                '--disable-gpu'
             ],
-            defaultViewport: { width: 1920, height: 1080 },
-            executablePath: await chromiumDefault.executablePath(),
+            defaultViewport: Chromium.defaultViewport || { width: 1920, height: 1080 },
+            executablePath: executablePath,
             headless: true,
         });
     } else {
