@@ -13,11 +13,14 @@ async function getBrowser() {
     if (isVercel) {
         // Use Chromium for Vercel - properly configured for serverless
         const chromium = await import('@sparticuz/chromium');
-        const Chromium = chromium.default || chromium;
         
-        // Get Chromium executable path and args (already configured for serverless)
-        const executablePath = await Chromium.executablePath();
-        const args = Chromium.args || [];
+        // @sparticuz/chromium exports functions directly, not as properties
+        // Get Chromium executable path and args
+        // @sparticuz/chromium handles all library dependencies internally
+        const executablePath = await (chromium as any).executablePath();
+        const args = (chromium as any).args || [];
+        const defaultViewport = (chromium as any).defaultViewport || { width: 1280, height: 720 };
+        const headless = (chromium as any).headless !== false;
         
         return puppeteer.launch({
             args: [
@@ -57,9 +60,9 @@ async function getBrowser() {
                 '--password-store=basic',
                 '--use-mock-keychain'
             ],
-            defaultViewport: Chromium.defaultViewport || { width: 1280, height: 720 },
+            defaultViewport: defaultViewport,
             executablePath: executablePath,
-            headless: Chromium.headless,
+            headless: headless,
         });
     } else {
         // Local development - use system Chrome
