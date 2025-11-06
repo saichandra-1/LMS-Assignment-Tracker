@@ -11,11 +11,11 @@ async function getBrowser() {
     const isVercel = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
     
     if (isVercel) {
-        // Use Chromium for Vercel - optimized for lower memory usage
+        // Use Chromium for Vercel - properly configured for serverless
         const chromium = await import('@sparticuz/chromium');
         const Chromium = chromium.default || chromium;
         
-        // Get Chromium executable path and args
+        // Get Chromium executable path and args (already configured for serverless)
         const executablePath = await Chromium.executablePath();
         const args = Chromium.args || [];
         
@@ -43,11 +43,23 @@ async function getBrowser() {
                 '--disable-default-apps',
                 '--disable-features=TranslateUI',
                 '--disable-ipc-flooding-protection',
-                '--disable-sync'
+                '--disable-sync',
+                '--disable-background-downloads',
+                '--disable-client-side-phishing-detection',
+                '--disable-hang-monitor',
+                '--disable-popup-blocking',
+                '--disable-prompt-on-repost',
+                '--disable-translate',
+                '--metrics-recording-only',
+                '--no-crash-upload',
+                '--no-default-browser-check',
+                '--no-pings',
+                '--password-store=basic',
+                '--use-mock-keychain'
             ],
-            defaultViewport: { width: 1280, height: 720 },
+            defaultViewport: Chromium.defaultViewport || { width: 1280, height: 720 },
             executablePath: executablePath,
-            headless: true,
+            headless: Chromium.headless,
         });
     } else {
         // Local development - use system Chrome
